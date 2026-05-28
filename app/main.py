@@ -15,7 +15,17 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.config import ADMIN_PASSWORD, RESEND_API_KEY, RESEND_FROM, TRACKED_SLUGS
-from app.db import AnalystNote, Instrument, Subscriber, Version, VersionPair, VersionSource, get_db, init_db
+from app.db import (
+    AnalystNote,
+    Instrument,
+    Subscriber,
+    Version,
+    VersionPair,
+    VersionSource,
+    SessionLocal,
+    get_db,
+    init_db,
+)
 from app.diff.redline import export_pair_markdown
 from app.ingest.federal_register import fetch_all_executive_orders
 from app.ingest.govinfo import fetch_all_public_laws
@@ -158,6 +168,28 @@ def unsubscribe(instrument: str, email: str, db: Session = Depends(get_db)):
 @app.on_event("startup")
 def on_startup() -> None:
     init_db()
+    # Ensure core tracked instruments exist (fresh Postgres deploys start empty).
+    db = SessionLocal()
+    try:
+        for slug in TRACKED_SLUGS:
+            if db.query(Instrument).filter(Instrument.slug == slug).first():
+                continue
+            src = UPLOAD_SOURCES.get(slug, {})
+            title = (src.get("title") or slug).strip()
+            inst_type = (src.get("type") or "executive_order").strip()
+            db.add(
+                Instrument(
+                    slug=slug,
+                    title=title,
+                    instrument_type=inst_type,
+                    policy_tags="",
+                    source_ref=title,
+                    last_fetch_status="manual",
+                )
+            )
+        db.commit()
+    finally:
+        db.close()
     templates.env.globals.update(site_context())
     templates.env.globals.update(
         {

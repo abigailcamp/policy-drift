@@ -38,7 +38,7 @@
     {% for row in cluster.rows %}
     <li class="archive-item">
       <a class="archive-link" href="/instruments/{{ row.instrument.slug }}">
-        {% if row.instrument.source_ref %}
+        {% if row.instrument.source_ref and row.instrument.source_ref != row.instrument.title %}
         <p class="archive-ref">{{ row.instrument.source_ref }}</p>
         {% endif %}
         <h2 class="archive-title">{{ row.instrument.title }}</h2>
