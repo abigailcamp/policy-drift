@@ -12,9 +12,6 @@
     · <span class="tag-pill tag-pill--status tag-pill--{{ instrument.last_fetch_status }}">{{ instrument.last_fetch_status }}</span>
     {% endif %}
   </p>
-  <p class="item-actions">
-    <a href="/admin/upload?instrument={{ instrument.slug }}">Upload new version</a>
-  </p>
 </header>
 
 <section class="page-section">
@@ -49,7 +46,7 @@
     <button type="submit" class="btn-solid">View redline</button>
   </form>
   {% else %}
-  <p class="page-lead">Add at least two versions via <a href="/admin/upload?instrument={{ instrument.slug }}">upload</a>.</p>
+  <p class="page-lead">Add at least two versions to compare.</p>
   {% endif %}
 </section>
 
