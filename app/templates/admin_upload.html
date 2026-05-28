@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Upload — {{ site_name }}{% endblock %}
+{% block extra_head %}
+<script>window.UPLOAD_SOURCES = {{ upload_sources_json | safe }};</script>
+{% endblock %}
+{% block content %}
+<p class="back-link"><a href="/">← Dashboard</a></p>
+<h2 class="page-title">Upload a document version</h2>
+<p class="page-lead">Paste official text from the Federal Register (executive orders) or GovInfo (public laws).</p>
+
+<div id="upload-guide-panel" class="guide-panel" hidden>
+  <h3 id="guide-title">Executive order</h3>
+  <p id="guide-type" style="margin:0;color:var(--text-soft);font-size:0.92rem"></p>
+  <ol class="guide-steps">
+    <li><strong>Open the official page</strong> using the link below.</li>
+    <li><strong>Select all document text</strong> from “By the authority vested…” through the end.</li>
+    <li><strong>Copy and paste</strong> into the text area below.</li>
+    <li>Use <strong>Fill suggested fields</strong>, then <strong>Save version</strong>.</li>
+  </ol>
+  <div class="guide-actions">
+    <a id="guide-fr-link" href="#" target="_blank" rel="noopener" class="btn">Open official source ↗</a>
+    <button type="button" id="btn-fill-defaults" class="btn btn-secondary">Fill suggested fields</button>
+  </div>
+</div>
+
+{% if message %}
+<p class="message success">{{ message | safe }}</p>
+{% endif %}
+{% if error %}
+<p class="message error">{{ error }}</p>
+{% endif %}
+
+<form class="flow-form" method="post" action="/admin/upload">
+  <div class="form-row">
+    <label for="instrument_slug">Document</label>
+    <select name="instrument_slug" id="instrument_slug" required>
+      {% for inst in instruments %}
+      <option value="{{ inst.slug }}" {% if preselect_slug == inst.slug %}selected{% endif %}>{{ inst.title }}</option>
+      {% endfor %}
+    </select>
+    <p class="form-hint"><a href="/admin/upload?instrument=eo-14024">Jump to EO 14024</a></p>
+  </div>
+
+  <div class="form-row-inline">
+    <div class="form-row">
+      <label for="version_label">Version label</label>
+      <input type="text" name="version_label" id="version_label" required placeholder="2022-02-21 — Full text">
+    </div>
+    <div class="form-row">
+      <label for="effective_date">Effective date</label>
+      <input type="date" name="effective_date" id="effective_date">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <label for="source_url">Source URL</label>
+    <input type="text" name="source_url" id="source_url" placeholder="https://www.federalregister.gov/...">
+  </div>
+
+  <div class="form-row">
+    <label for="raw_text">Full document text</label>
+    <textarea name="raw_text" id="raw_text" rows="16" required placeholder="Paste the full text here…"></textarea>
+  </div>
+
+  <button type="submit" class="btn-solid">Save version</button>
+</form>
+
+<div class="quick-links">
+  <strong>Executive orders</strong>
+  <ul>
+    {% for slug, meta in upload_sources.items() if meta.type == 'executive_order' %}
+    <li><a href="/admin/upload?instrument={{ slug }}">{{ meta.title }}</a> · <a href="{{ meta.fr_url }}" target="_blank" rel="noopener">Federal Register ↗</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="/static/upload.js"></script>
+{% endblock %}

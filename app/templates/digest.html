@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Digest — {{ site_name }}{% endblock %}
+{% set active_nav = '' %}
+{% block content %}
+<h2 class="page-title">Change digest</h2>
+<p class="page-lead">Latest version compared to the previous snapshot for each document.</p>
+
+<ul class="instrument-list">
+{% for row in digest_rows %}
+  <li class="instrument-item">
+    <h2><a href="/instruments/{{ row.instrument.slug }}">{{ row.instrument.title }}</a></h2>
+    <p class="instrument-meta">
+      {{ row.from_version.version_label }} → {{ row.to_version.version_label }}
+    </p>
+    {% if row.stats %}
+    <p class="diff-stats">
+      <span>+{{ row.stats.lines_added }} / −{{ row.stats.lines_removed }} lines</span>
+      <span>{{ row.stats.percent_changed }}% changed</span>
+    </p>
+    {% endif %}
+    <p class="item-actions">
+      <a href="/diff?from={{ row.from_version.id }}&to={{ row.to_version.id }}">View diff</a>
+      {% if not row.has_note %}<span class="sep">·</span><span style="color:var(--muted);font-style:italic">No analyst note yet</span>{% endif %}
+    </p>
+  </li>
+{% else %}
+  <li class="instrument-item">No documents with two or more versions yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}

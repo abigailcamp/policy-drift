@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Analysis — {{ site_name }}{% endblock %}
+{% set active_nav = 'analysis' %}
+
+{% block content %}
+<p class="section-label section-label--spaced">Analysis</p>
+
+<div class="analysis-index">
+  {% for post in posts %}
+  <article class="analysis-row">
+    <p class="analysis-date">{{ post.published.strftime('%Y-%m-%d') }}</p>
+    <div class="analysis-body">
+      <p class="analysis-title"><a href="/analysis/{{ post.slug }}">{{ post.title }}</a></p>
+      {% if post.author %}<p class="analysis-byline">By {{ post.author }}</p>{% endif %}
+    </div>
+  </article>
+  {% else %}
+  <p class="page-lead">No posts yet. Add a Markdown file to the <code>/analysis</code> folder.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+

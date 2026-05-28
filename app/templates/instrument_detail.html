@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ instrument.title }} — {{ site_name }}{% endblock %}
+{% set active_nav = 'dashboard' %}
+{% block content %}
+<p class="back-link"><a href="/">← Dashboard</a></p>
+
+<header class="page-section">
+  <h2 class="page-title">{{ instrument.title }}</h2>
+  <p class="instrument-meta">
+    {{ instrument.source_ref }}
+    {% if instrument.last_fetch_status %}
+    · <span class="tag-pill tag-pill--status tag-pill--{{ instrument.last_fetch_status }}">{{ instrument.last_fetch_status }}</span>
+    {% endif %}
+  </p>
+  <p class="item-actions">
+    <a href="/admin/upload?instrument={{ instrument.slug }}">Upload new version</a>
+  </p>
+</header>
+
+<section class="page-section">
+  <h2>Compare versions</h2>
+  {% if versions|length >= 2 %}
+  <form class="compare-bar" action="/diff" method="get">
+    {% set n = versions|length %}
+    <div class="form-row">
+      <label for="from">Earlier</label>
+      <select name="from" id="from" required>
+        {% for v in versions %}
+        <option value="{{ v.id }}" {% if loop.index0 == n - 2 %}selected{% endif %}>{{ v.version_label }}{% if v.effective_date %} ({{ v.effective_date }}){% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-row">
+      <label for="to">Later</label>
+      <select name="to" id="to" required>
+        {% for v in versions %}
+        <option value="{{ v.id }}" {% if loop.index0 == n - 1 %}selected{% endif %}>{{ v.version_label }}{% if v.effective_date %} ({{ v.effective_date }}){% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-row">
+      <label for="mode">View</label>
+      <select name="mode" id="mode">
+        <option value="unified" selected>Inline (unified)</option>
+        <option value="side_by_side">Side-by-side</option>
+      </select>
+    </div>
+    <label class="checkbox-row"><input type="checkbox" name="section_aware" value="true"> Section-aware</label>
+    <button type="submit" class="btn-solid">View redline</button>
+  </form>
+  {% else %}
+  <p class="page-lead">Add at least two versions via <a href="/admin/upload?instrument={{ instrument.slug }}">upload</a>.</p>
+  {% endif %}
+</section>
+
+<section class="page-section">
+  <p class="section-label">Version timeline</p>
+  <ul class="version-list">
+    {% for v in versions %}
+    <li>
+      <strong>{{ v.version_label }}</strong>
+      {% if v.effective_date %}<span style="color:var(--muted)"> — {{ v.effective_date }}</span>{% endif %}
+      {% if v.sources %}
+      <br><small><a href="{{ v.sources[0].source_url }}" target="_blank" rel="noopener">{{ v.sources[0].source_type }}</a></small>
+      {% endif %}
+    </li>
+    {% else %}
+    <li>No versions yet.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Diff — {{ instrument.title }}{% endblock %}
+{% set active_nav = 'dashboard' %}
+{% block content %}
+<p class="back-link"><a href="/instruments/{{ instrument.slug }}">← {{ instrument.title }}</a></p>
+
+<header class="page-section">
+  <h2 class="page-title">Redline</h2>
+  <p class="instrument-meta">
+    {{ from_version.version_label }}
+    {% if from_version.effective_date %}({{ from_version.effective_date }}){% endif %}
+    → {{ to_version.version_label }}
+    {% if to_version.effective_date %}({{ to_version.effective_date }}){% endif %}
+  </p>
+  {% if stats %}
+  <p class="diff-stats">
+    <span>+{{ stats.lines_added }} lines</span>
+    <span>−{{ stats.lines_removed }} lines</span>
+    <span>{{ stats.percent_changed }}% changed</span>
+  </p>
+  {% endif %}
+  <nav class="toolbar">
+    <a class="{% if mode != 'side_by_side' %}is-active{% endif %}" href="/diff?from={{ from_version.id }}&to={{ to_version.id }}&mode=unified{% if section_aware %}&section_aware=true{% endif %}">Inline</a>
+    <a class="{% if mode == 'side_by_side' %}is-active{% endif %}" href="/diff?from={{ from_version.id }}&to={{ to_version.id }}&mode=side_by_side{% if section_aware %}&section_aware=true{% endif %}">Side-by-side</a>
+    <a class="{% if section_aware %}is-active{% endif %}" href="/diff?from={{ from_version.id }}&to={{ to_version.id }}&section_aware=true&mode={{ mode }}">Section-aware</a>
+    <a href="/export/markdown?from={{ from_version.id }}&to={{ to_version.id }}">Export Markdown</a>
+    <a href="/notes/{{ pair.id }}/edit" class="btn-solid">{% if note and note.summary %}Edit note{% else %}Add analyst note{% endif %}</a>
+  </nav>
+</header>
+
+{% if note and (note.summary or note.policy_implications) %}
+<aside class="note-block">
+  <h2>Analyst note</h2>
+  {% if note.summary %}<p>{{ note.summary }}</p>{% endif %}
+  {% if note.policy_implications %}
+  <h3 style="font-family:var(--font-display);font-size:1.05rem;margin:1rem 0 0.35rem">Policy implications</h3>
+  <p>{{ note.policy_implications }}</p>
+  {% endif %}
+  {% if note.tags %}<p style="font-size:0.9rem;color:var(--muted)">{{ note.tags | replace(',', ' · ') }}</p>{% endif %}
+  {% if note.caveats %}<p><em>{{ note.caveats }}</em></p>{% endif %}
+</aside>
+{% endif %}
+
+<section class="page-section">
+  {% if stats and stats.lines_added == 0 and stats.lines_removed == 0 %}
+  <p class="section-unchanged">No textual differences between these versions.</p>
+  {% endif %}
+  {{ diff_html | safe }}
+</section>
+{% endblock %}

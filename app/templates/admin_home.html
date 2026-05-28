@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Admin — {{ site_name }}{% endblock %}
+
+{% block page_intro %}{% endblock %}
+
+{% block content %}
+<p class="section-label section-label--spaced">Admin</p>
+<p class="page-lead">Private tools for managing documents and updates.</p>
+
+<ul class="instrument-list">
+  <li class="instrument-item">
+    <h2 class="instrument-title"><a href="/admin/upload">Upload</a></h2>
+    <p class="instrument-meta">Paste official text and save a new version.</p>
+  </li>
+  <li class="instrument-item">
+    <h2 class="instrument-title"><a href="/admin/digest">Digest</a></h2>
+    <p class="instrument-meta">Compare latest snapshots across instruments.</p>
+  </li>
+  <li class="instrument-item">
+    <h2 class="instrument-title">Fetch APIs</h2>
+    <p class="instrument-meta">Pull updates from configured sources.</p>
+    <p class="item-actions">
+      <form class="nav-fetch" action="/admin/fetch" method="post">
+        <button type="submit" class="nav-cap nav-cap--button">Run fetch</button>
+      </form>
+    </p>
+  </li>
+</ul>
+{% endblock %}
+

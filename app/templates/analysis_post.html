@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} — Analysis — {{ site_name }}{% endblock %}
+{% set active_nav = 'analysis' %}
+
+{% block content %}
+<p class="back-link"><a href="/analysis">← Analysis</a></p>
+
+<header class="analysis-header">
+  <h2 class="analysis-h1">{{ post.title }}</h2>
+  <p class="analysis-meta">
+    <span class="analysis-date-rust">{{ post.published.strftime('%Y-%m-%d') }}</span>
+    {% if post.author %}<span class="analysis-sep">·</span> <span class="analysis-by">By {{ post.author }}</span>{% endif %}
+  </p>
+</header>
+
+<article class="analysis-prose">
+  {{ post.html | safe }}
+</article>
+{% endblock %}
+

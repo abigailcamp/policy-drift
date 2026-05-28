@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ site_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="icon" href="{{ logo_path }}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="page-top-border" aria-hidden="true"></div>
+
+  <header class="site-topbar">
+    <div class="layout-inner site-topbar-inner">
+      <a href="/" class="topbar-brand" aria-label="{{ site_name }} home">
+        <span class="topbar-lockup">
+          <svg class="drift-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 22" fill="none" aria-hidden="true">
+            <path d="M0 16H50" stroke="var(--slate)" stroke-width="1.15" stroke-linecap="round"/>
+            <path d="M50 16C50 16 58 6 70 4" stroke="var(--slate)" stroke-width="1.15" stroke-linecap="round" fill="none"/>
+            <circle cx="76" cy="2" r="3" fill="var(--rust)"/>
+          </svg>
+          <span class="topbar-wordmark">
+            <span class="wordmark-drift">policy</span><span class="wordmark-log">drift</span>
+          </span>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="topbar-menu">
+        <span class="nav-toggle-bars" aria-hidden="true"></span>
+      </button>
+      <nav class="topbar-nav" id="topbar-menu" aria-label="Primary">
+        <a href="/" class="nav-cap{% if active_nav == 'dashboard' %} is-active{% endif %}">Dashboard</a>
+        <a href="/analysis" class="nav-cap{% if active_nav == 'analysis' %} is-active{% endif %}">Analysis</a>
+        <a href="/about" class="nav-cap{% if active_nav == 'about' %} is-active{% endif %}">About</a>
+        <a href="/changelog" class="nav-cap{% if active_nav == 'changelog' %} is-active{% endif %}">Changelog</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout-inner layout-main">
+    {% block page_intro %}
+    <div class="page-intro">
+      {% if site_full_title %}
+      <h1 class="deck-title">{{ site_full_title }}</h1>
+      {% endif %}
+      {% if deck_lead %}
+      <p class="deck-lead">{{ deck_lead }}</p>
+      {% endif %}
+      <div class="page-intro-about">
+        <p class="about-name">{{ author_name }}</p>
+        <p class="about-line">{{ author_line }}</p>
+      </div>
+    </div>
+    {% endblock %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="site-footer">
+      <p class="footer-wordmark"><span class="wordmark-drift">policy</span><span class="wordmark-log">drift</span></p>
+      {% if footer_description %}
+      <p class="footer-tagline">{{ footer_description }}</p>
+      {% else %}
+      <p class="footer-tagline">{{ site_tagline }}</p>
+      {% endif %}
+      {% if footer_byline and footer_email %}
+      <p class="footer-byline">
+        <a href="mailto:{{ footer_email }}">{{ footer_byline }}</a>
+        {% if footer_shadow_fleet_url %}
+        <span class="footer-byline-sep">·</span>
+        <a class="footer-mini-link" href="{{ footer_shadow_fleet_url }}" target="_blank" rel="noopener">SHADOW FLEET PIECE ↗</a>
+        {% endif %}
+      </p>
+      {% elif footer_byline %}
+      <p class="footer-byline">{{ footer_byline }}</p>
+      {% endif %}
+      <p class="footer-disclaimer">Research and education only — not legal advice. Compares public government text you upload or fetch from official sources.</p>
+      {% if project_link %}
+      <p class="footer-link"><a href="{{ project_link }}" target="_blank" rel="noopener">{{ project_link_label }} ↗</a></p>
+      {% endif %}
+    </footer>
+  </div>
+  <dialog class="modal" id="notify-modal" aria-labelledby="notify-title">
+    <form method="dialog" class="modal-card" id="notify-form">
+      <h2 class="modal-title" id="notify-title">Email alerts</h2>
+      <p class="modal-lead">Get a plain-text email when this instrument changes.</p>
+      <input type="hidden" name="instrument_slug" id="notify-instrument" value="">
+
+      <label class="modal-label" for="notify-email">Email</label>
+      <input class="modal-input" type="email" id="notify-email" name="email" placeholder="you@example.com" required>
+
+      <p class="modal-message" id="notify-message" role="status" aria-live="polite"></p>
+
+      <div class="modal-actions">
+        <button class="btn-solid" value="submit" id="notify-submit">Subscribe</button>
+        <button class="btn-ghost" value="cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  {% block extra_scripts %}{% endblock %}
+  <script src="/static/nav.js"></script>
+  <script src="/static/subscribe.js"></script>
+</body>
+</html>

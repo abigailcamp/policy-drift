@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Analyst note — {{ site_name }}{% endblock %}
+{% set active_nav = 'dashboard' %}
+{% block content %}
+<p class="back-link"><a href="/diff?from={{ pair.from_version_id }}&to={{ pair.to_version_id }}">← Back to diff</a></p>
+
+<h2 class="page-title">Analyst note</h2>
+<p class="page-lead">{{ from_version.version_label }} → {{ to_version.version_label }}</p>
+
+<form class="flow-form" method="post" action="/notes/{{ pair.id }}/edit">
+  <div class="form-row">
+    <label for="summary">What changed</label>
+    <textarea name="summary" id="summary" rows="4">{% if note %}{{ note.summary }}{% endif %}</textarea>
+  </div>
+  <div class="form-row">
+    <label for="policy_implications">Policy implications</label>
+    <textarea name="policy_implications" id="policy_implications" rows="6">{% if note %}{{ note.policy_implications }}{% endif %}</textarea>
+  </div>
+  <div class="form-row">
+    <label for="tags">Tags</label>
+    <input type="text" name="tags" id="tags" value="{% if note %}{{ note.tags }}{% endif %}" placeholder="sanctions, energy, aid">
+  </div>
+  <div class="form-row">
+    <label for="caveats">Caveats</label>
+    <textarea name="caveats" id="caveats" rows="2">{% if note %}{{ note.caveats }}{% endif %}</textarea>
+  </div>
+  <button type="submit" class="btn-solid">Save note</button>
+</form>
+{% endblock %}

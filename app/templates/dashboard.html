@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ site_name }}{% endblock %}
+{% set active_nav = 'dashboard' %}
+{% block content %}
+{% if fetched %}
+<p class="message success">Fetch completed — see status below each document.</p>
+{% endif %}
+
+<p class="dashboard-deck">Monitoring the legal architecture of sanctions, trade, and security policy</p>
+
+<div class="dashboard-search" role="search">
+  <label class="search-label" for="dashboard-search-input">Search</label>
+  <input
+    class="search-input"
+    id="dashboard-search-input"
+    type="search"
+    placeholder="Search titles, tags, and document text…"
+    autocomplete="off"
+    spellcheck="false"
+  >
+  <p class="search-hint" id="dashboard-search-hint">Type to filter in real time.</p>
+</div>
+
+{% for cluster in clusters %}
+<section class="dashboard-cluster" id="cluster-{{ cluster.key }}">
+  <p class="section-label section-label--spaced">{{ cluster.title }}</p>
+  {% if cluster.deck %}<p class="cluster-deck">{{ cluster.deck }}</p>{% endif %}
+
+  <ul class="instrument-list">
+  {% if cluster.rows %}
+    {% for row in cluster.rows %}
+    <li class="instrument-item">
+      <h2 class="instrument-title"><a href="/instruments/{{ row.instrument.slug }}">{{ row.instrument.title }}</a></h2>
+      <p class="instrument-meta instrument-meta--tags">
+        <span class="tag-pill tag-pill--type">{{ row.instrument.instrument_type | replace('_', ' ') }}</span>
+        {% for tag in row.instrument.policy_tags.split(',') %}
+        {% if tag.strip() %}
+        <span class="tag-pill">{{ tag.strip() }}</span>
+        {% endif %}
+        {% endfor %}
+      </p>
+      <p class="instrument-meta">
+        {{ row.version_count }} version{{ 's' if row.version_count != 1 else '' }}
+        · last fetch {% if row.last_fetch_at %}{{ row.last_fetch_at.strftime('%Y-%m-%d %H:%M') }}{% else %}never{% endif %}
+        <span class="tag-pill tag-pill--status tag-pill--{{ row.status_class }}">{{ row.status_label }}</span>
+        {% if row.last_fetch_message %}<span class="fetch-note">{{ row.last_fetch_message }}</span>{% endif %}
+      </p>
+      <p class="item-actions">
+        <a href="/instruments/{{ row.instrument.slug }}">View timeline</a>
+        <span class="sep">·</span>
+        <a href="/admin/upload?instrument={{ row.instrument.slug }}">Upload text</a>
+        <span class="sep">·</span>
+        <a href="#" class="notify-link" data-instrument="{{ row.instrument.slug }}">Notify me</a>
+      </p>
+    </li>
+    {% endfor %}
+  {% else %}
+    {% for ph in cluster.placeholders %}
+    <li class="instrument-item instrument-item--placeholder">
+      <h2 class="instrument-title">{{ ph.title }}</h2>
+      <p class="instrument-meta">
+        <span class="tag-pill tag-pill--status tag-pill--pending">Coming soon</span>
+      </p>
+    </li>
+    {% endfor %}
+  {% endif %}
+  </ul>
+</section>
+{% endfor %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/search.js"></script>
+{% endblock %}

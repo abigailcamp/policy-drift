@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Changelog — {{ site_name }}{% endblock %}
+{% set active_nav = 'changelog' %}
+
+{% block content %}
+<p class="section-label section-label--spaced">Changelog</p>
+
+<div class="changelog">
+  {% for item in items %}
+  <article class="change-row">
+    <p class="change-date">{{ item.retrieved_at.strftime('%Y-%m-%d') }}</p>
+    <div class="change-body">
+      <p class="change-title">
+        <a href="/instruments/{{ item.instrument.slug }}">{{ item.instrument.title }}</a>
+      </p>
+      <p class="change-meta">
+        <span class="change-note">{{ item.note }}</span>
+        <span class="change-sep">·</span>
+        <span class="change-version">{{ item.version.version_label }}</span>
+      </p>
+    </div>
+  </article>
+  {% else %}
+  <p class="page-lead">No changelog entries yet. Use Fetch APIs or upload a version.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+
