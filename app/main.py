@@ -30,7 +30,7 @@ from app.diff.redline import export_pair_markdown
 from app.ingest.federal_register import fetch_all_executive_orders
 from app.ingest.govinfo import fetch_all_public_laws
 from app.ingest.fr_series import fetch_all_fr_series
-from app.ingest.ofac_sdn import fetch_ofac_sdn
+from app.ingest.ofac_sdn import fetch_ofac_sdn, fetch_ofac_sdn_archive
 from app.ingest.manual import create_manual_version
 from app.services import get_instrument_by_slug, get_or_create_pair, parse_stats
 from app.upload_sources import UPLOAD_SOURCES
@@ -819,12 +819,25 @@ def admin_home(request: Request, db: Session = Depends(get_db), _: bool = Depend
                 "last_fetch_message": inst.last_fetch_message or "",
             }
         )
+
+    ofac_status = None
+    ofac_inst = get_instrument_by_slug(db, "ofac-sdn")
+    if ofac_inst:
+        ofac_versions = db.query(Version).filter(Version.instrument_id == ofac_inst.id).count()
+        ofac_status = {
+            "slug": ofac_inst.slug,
+            "title": ofac_inst.title,
+            "version_count": ofac_versions,
+            "last_fetch_message": ofac_inst.last_fetch_message or "",
+        }
+
     return render(
         request,
         "admin_home.html",
         {
             "active_nav": "",
             "series_status": series_status,
+            "ofac_status": ofac_status,
             "fetch_log": request.query_params.get("fetch_log"),
         },
     )
@@ -840,3 +853,14 @@ def admin_fetch_fr_series(
     results = fetch_all_fr_series(db)
     log = "; ".join(f"{slug}: {msg}" for slug, msg in results.items())
     return RedirectResponse(url=f"/admin?fetch_log={quote(log)}", status_code=303)
+
+
+@app.post("/admin/fetch-ofac-archive")
+def admin_fetch_ofac_archive(
+    request: Request, db: Session = Depends(get_db), _: bool = Depends(require_admin)
+):
+    """Pull a prior full SDN.CSV from Internet Archive (OFAC SLS only serves the current file)."""
+    from urllib.parse import quote
+
+    msg = fetch_ofac_sdn_archive(db)
+    return RedirectResponse(url=f"/admin?fetch_log={quote(f'ofac-sdn: {msg}')}", status_code=303)
