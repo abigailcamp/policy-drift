@@ -14,31 +14,19 @@
   {% if cluster.deck %}<p class="cluster-deck">{{ cluster.deck }}</p>{% endif %}
 
   {% if cluster.rows %}
-  <ul class="instrument-list">
+  <ul class="instrument-list instrument-list--archive">
     {% for row in cluster.rows %}
-    <li class="instrument-item">
-      <h2 class="instrument-title"><a href="/instruments/{{ row.instrument.slug }}">{{ row.instrument.title }}</a></h2>
-      <p class="instrument-meta instrument-meta--tags">
-        <span class="tag-pill tag-pill--type">{{ row.instrument.instrument_type | replace('_', ' ') }}</span>
-        {% for tag in row.instrument.policy_tags.split(',') %}
-        {% if tag.strip() %}
-        <span class="tag-pill">{{ tag.strip() }}</span>
+    <li class="archive-item">
+      <a class="archive-link" href="/instruments/{{ row.instrument.slug }}">
+        {% if row.instrument.source_ref %}
+        <p class="archive-ref">{{ row.instrument.source_ref }}</p>
         {% endif %}
-        {% endfor %}
-      </p>
-      <p class="instrument-meta">
-        {{ row.version_count }} version{{ 's' if row.version_count != 1 else '' }}
-        · last fetch {% if row.last_fetch_at %}{{ fmt_dt(row.last_fetch_at) }}{% else %}never{% endif %}
-        <span class="tag-pill tag-pill--status tag-pill--{{ row.status_class }}">{{ row.status_label }}</span>
-        {% if row.last_fetch_message %}<span class="fetch-note">{{ row.last_fetch_message }}</span>{% endif %}
-      </p>
-      <p class="item-actions">
-        <a href="/instruments/{{ row.instrument.slug }}">View timeline</a>
-        <span class="sep">·</span>
-        <a href="/admin/upload?instrument={{ row.instrument.slug }}">Upload text</a>
-        <span class="sep">·</span>
-        <a href="#" class="notify-link" data-instrument="{{ row.instrument.slug }}">Notify me</a>
-      </p>
+        <h2 class="archive-title">{{ row.instrument.title }}</h2>
+        <p class="archive-meta">
+          {{ row.version_count }} version{{ 's' if row.version_count != 1 else '' }}
+          {% if row.last_fetch_at %}<span class="archive-sep">·</span> last fetch {{ fmt_dt(row.last_fetch_at) }}{% endif %}
+        </p>
+      </a>
     </li>
     {% endfor %}
   </ul>

@@ -22,7 +22,7 @@
   --font-body: "DM Sans", system-ui, sans-serif;
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-weight-body: 300;
-  --layout-max: 53.75rem;
+  --layout-max: 60rem;
   --layout-gutter: clamp(1.5rem, 5vw, 3rem);
   --measure: var(--layout-max);
   --measure-wide: var(--layout-max);
@@ -510,9 +510,9 @@ a:hover {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 500;
-  font-size: 1.25rem;
+  font-size: 1.45rem;
   color: var(--slate);
-  margin: 1.15rem 0 1.15rem;
+  margin: 1.35rem 0 1.35rem;
 }
 
 .dashboard-search {
@@ -526,6 +526,17 @@ a:hover {
   color: var(--charcoal);
   font-size: 1rem;
   line-height: 1.55;
+}
+
+.dashboard-cluster {
+  padding-bottom: 1.35rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 1px solid rgba(211, 209, 199, 0.45);
+}
+
+.dashboard-cluster:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
 }
 
 .cluster-soon {
@@ -612,20 +623,73 @@ mark {
   margin: 0;
 }
 
-.instrument-item {
-  padding: 1.65rem 0 1.65rem 1.15rem;
-  border-bottom: 1px solid var(--stone);
+.instrument-list--archive {
+  margin-top: 0.25rem;
+}
+
+.archive-item {
+  margin: 0;
+  padding: 0;
+}
+
+.archive-link {
+  display: block;
+  padding: 0.9rem 0 0.9rem 1.05rem;
+  text-decoration: none;
+  color: inherit;
   border-left: 2px solid transparent;
-  transition: border-left-color 0.2s ease, background-color 0.2s ease;
+  transition: border-left-color 220ms ease, background-color 220ms ease;
 }
 
-.instrument-item:first-child {
-  padding-top: 0.25rem;
-}
-
-.instrument-item:not(.instrument-item--placeholder):hover {
+.archive-link:hover {
   border-left-color: #8b3a1e;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.archive-ref {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.archive-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--slate);
+}
+
+.archive-meta {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.archive-sep {
+  margin: 0 0.4rem;
+  opacity: 0.7;
+}
+
+.archive-link:hover .archive-meta,
+.archive-link:focus-visible .archive-meta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.archive-link:focus-visible {
+  outline: none;
+  box-shadow: inset 0 -1px 0 var(--rust);
 }
 
 .instrument-title {
