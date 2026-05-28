@@ -59,7 +59,7 @@ def _xml_to_text(xml_content: str) -> str:
 def fetch_document_text(document_number: str) -> tuple[str, str]:
     """Return (full_text, source_url)."""
     url = f"{FR_BASE}/documents/{document_number}.json"
-    with httpx.Client(timeout=60.0) as client:
+    with httpx.Client(timeout=120.0) as client:
         resp = client.get(url, headers=_headers())
         resp.raise_for_status()
         data = resp.json()
@@ -70,7 +70,7 @@ def fetch_document_text(document_number: str) -> tuple[str, str]:
     if not text:
         xml_url = data.get("full_text_xml_url")
         if xml_url:
-            with httpx.Client(timeout=60.0) as client:
+            with httpx.Client(timeout=120.0) as client:
                 xml_resp = client.get(xml_url, headers=_headers())
                 if xml_resp.status_code == 200:
                     text = _xml_to_text(xml_resp.text)
@@ -78,7 +78,7 @@ def fetch_document_text(document_number: str) -> tuple[str, str]:
     if not text:
         body_url = data.get("body_html_url") or data.get("html_url")
         if body_url:
-            with httpx.Client(timeout=60.0) as client:
+            with httpx.Client(timeout=120.0) as client:
                 html_resp = client.get(body_url, headers=_headers())
                 if html_resp.status_code == 200:
                     text = normalize_text(html_resp.text)

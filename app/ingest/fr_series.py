@@ -55,6 +55,7 @@ def ingest_fr_series(db: Session, instrument: Instrument) -> tuple[int, int, str
     new_count = 0
     deduped_count = 0
     last_error: str | None = None
+    snap_errors: list[str] = []
 
     for snap in snapshots:
         try:
@@ -72,7 +73,7 @@ def ingest_fr_series(db: Session, instrument: Instrument) -> tuple[int, int, str
                 source_type="federal_register",
             )
             if not result.version:
-                last_error = "Empty text after normalization"
+                snap_errors.append(f"{snap['document_number']}: empty after normalization")
                 continue
             if result.created:
                 result.version.fetch_status = "ok"
@@ -81,7 +82,9 @@ def ingest_fr_series(db: Session, instrument: Instrument) -> tuple[int, int, str
             else:
                 deduped_count += 1
         except Exception as exc:
-            last_error = str(exc) or exc.__class__.__name__
+            err = str(exc) or exc.__class__.__name__
+            last_error = err
+            snap_errors.append(f"{snap['document_number']}: {err}")
 
     instrument.last_fetch_at = datetime.utcnow()
     if last_error and new_count == 0 and deduped_count == 0:
@@ -89,12 +92,39 @@ def ingest_fr_series(db: Session, instrument: Instrument) -> tuple[int, int, str
         instrument.last_fetch_message = last_error[:500]
     else:
         instrument.last_fetch_status = "ok"
-        instrument.last_fetch_message = f"{new_count} new, {deduped_count} unchanged"
+        msg = f"{new_count} new, {deduped_count} unchanged"
+        if snap_errors:
+            msg += " · " + "; ".join(snap_errors)[:350]
+        instrument.last_fetch_message = msg[:500]
     db.commit()
     return new_count, deduped_count, last_error
 
 
+def ensure_fr_series_instruments(db: Session) -> None:
+    """Create FR-series instrument rows if missing (e.g. deploy added new slugs)."""
+    from app.upload_sources import UPLOAD_SOURCES
+
+    for slug in FR_SERIES_BY_SLUG:
+        if slug not in TRACKED_SLUGS:
+            continue
+        if db.query(Instrument).filter(Instrument.slug == slug).first():
+            continue
+        src = UPLOAD_SOURCES.get(slug, {})
+        db.add(
+            Instrument(
+                slug=slug,
+                title=(src.get("title") or slug).strip(),
+                instrument_type=(src.get("type") or "fr_series").strip(),
+                policy_tags="",
+                source_ref=(src.get("title") or slug).strip(),
+                last_fetch_status="manual",
+            )
+        )
+    db.commit()
+
+
 def fetch_all_fr_series(db: Session) -> dict[str, str]:
+    ensure_fr_series_instruments(db)
     results: dict[str, str] = {}
     for slug in FR_SERIES_BY_SLUG:
         if slug not in TRACKED_SLUGS:

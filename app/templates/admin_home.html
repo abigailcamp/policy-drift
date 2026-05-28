@@ -7,6 +7,27 @@
 <p class="section-label section-label--spaced">Admin</p>
 <p class="page-lead">Private tools for managing documents and updates.</p>
 
+{% if fetch_log %}
+<p class="message success">{{ fetch_log }}</p>
+{% endif %}
+
+{% if series_status %}
+<p class="section-label">FR series status</p>
+<ul class="instrument-list">
+  {% for row in series_status %}
+  <li class="instrument-item">
+    <h2 class="instrument-title"><a href="/instruments/{{ row.slug }}">{{ row.title }}</a></h2>
+    <p class="instrument-meta">{{ row.version_count }} version{{ 's' if row.version_count != 1 else '' }}{% if row.last_fetch_message %} · {{ row.last_fetch_message }}{% endif %}</p>
+  </li>
+  {% endfor %}
+</ul>
+<p class="item-actions">
+  <form action="/admin/fetch-fr-series" method="post">
+    <button type="submit" class="nav-cap nav-cap--button">Fetch FR series only (Directive 4 &amp; GL 13)</button>
+  </form>
+</p>
+{% endif %}
+
 <ul class="instrument-list">
   <li class="instrument-item">
     <h2 class="instrument-title"><a href="/admin/upload">Upload</a></h2>

@@ -802,5 +802,41 @@ def about(request: Request):
 
 
 @app.get("/admin", response_class=HTMLResponse)
-def admin_home(request: Request, _: bool = Depends(require_admin)):
-    return render(request, "admin_home.html", {"active_nav": ""})
+def admin_home(request: Request, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
+    from app.ingest.fr_series import FR_SERIES_BY_SLUG
+
+    series_status = []
+    for slug in FR_SERIES_BY_SLUG:
+        inst = get_instrument_by_slug(db, slug)
+        if not inst:
+            continue
+        version_count = db.query(Version).filter(Version.instrument_id == inst.id).count()
+        series_status.append(
+            {
+                "slug": slug,
+                "title": inst.title,
+                "version_count": version_count,
+                "last_fetch_message": inst.last_fetch_message or "",
+            }
+        )
+    return render(
+        request,
+        "admin_home.html",
+        {
+            "active_nav": "",
+            "series_status": series_status,
+            "fetch_log": request.query_params.get("fetch_log"),
+        },
+    )
+
+
+@app.post("/admin/fetch-fr-series")
+def admin_fetch_fr_series(
+    request: Request, db: Session = Depends(get_db), _: bool = Depends(require_admin)
+):
+    """Fetch only multi-document FR series (Directive 4, GL 13) — use if full fetch missed them."""
+    from urllib.parse import quote
+
+    results = fetch_all_fr_series(db)
+    log = "; ".join(f"{slug}: {msg}" for slug, msg in results.items())
+    return RedirectResponse(url=f"/admin?fetch_log={quote(log)}", status_code=303)
