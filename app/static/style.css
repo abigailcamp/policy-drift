@@ -289,10 +289,12 @@ a:hover {
 }
 
 .about-name {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--slate);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--charcoal);
   margin: 0;
   line-height: 1.3;
 }

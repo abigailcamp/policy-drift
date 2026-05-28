@@ -6,32 +6,22 @@
 <p class="section-label section-label--spaced">About</p>
 
 <article class="analysis-prose about-prose">
-  <h2>What PolicyDrift is</h2>
+  <h2>What PolicyDrift Is</h2>
   <p>
-    PolicyDrift is a research tool for tracking how U.S. federal policy instruments change over time—executive orders,
-    public laws, and related authorities. It keeps a versioned log of source text and makes amendments legible through
-    redline diffs and short analyst notes.
+    PolicyDrift is a research tool for tracking how U.S. federal policy documents change over time, including executive orders, public laws, regulations, and related authorities.
+    It maintains a versioned record of source text and makes amendments easier to review through redline comparisons and concise analyst notes.
   </p>
 
-  <h2>How it works</h2>
+  <h2>How It Works</h2>
   <p>
     PolicyDrift collects documents from official government sources, including <a href="https://www.govinfo.gov/" target="_blank" rel="noopener">govinfo.gov</a>,
     <a href="https://www.federalregister.gov/" target="_blank" rel="noopener">federalregister.gov</a>, and <a href="https://www.congress.gov/" target="_blank" rel="noopener">congress.gov</a>.
-    You can also paste official text manually via Upload when an API copy isn’t available or you want a specific cut of the document.
-    Each version is normalized and deduplicated so identical text isn’t re-added.
+    Users can also upload official text directly when an API version is unavailable or when working with a specific section of a document.
+    Each version is normalized and deduplicated to avoid storing unchanged text repeatedly.
   </p>
   <p>
-    Versions are compared using text diffing. The tool flags additions and deletions, and it also tries to surface structural
-    changes (like moved sections or reshuffled paragraphs) so you can see what changed without rereading the entire document.
-    Results are for research and education only.
-  </p>
-
-  <h2>Who built it</h2>
-  <p>
-    Built by <strong>{{ author_name }}</strong> (Georgetown SFS). I focus on national security and political economy,
-    with an interest in sanctions, trade controls, and the legal architecture of security policy.
-    Read my reporting on the shadow fleet:
-    <a href="https://example.com/shadow-fleet" target="_blank" rel="noopener">Shadow fleet piece ↗</a>.
+    Documents are compared using text diffs. The platform identifies additions, deletions, and structural revisions, including moved sections or reorganized paragraphs,
+    so changes can be reviewed without rereading an entire document. PolicyDrift is intended for research and educational use.
   </p>
 </article>
 {% endblock %}

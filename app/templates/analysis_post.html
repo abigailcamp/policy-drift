@@ -8,7 +8,7 @@
 <header class="analysis-header">
   <h2 class="analysis-h1">{{ post.title }}</h2>
   <p class="analysis-meta">
-    <span class="analysis-date-rust">{{ post.published.strftime('%Y-%m-%d') }}</span>
+    <span class="analysis-date-rust">{{ fmt_date(post.published) }}</span>
     {% if post.author %}<span class="analysis-sep">·</span> <span class="analysis-by">By {{ post.author }}</span>{% endif %}
   </p>
 </header>

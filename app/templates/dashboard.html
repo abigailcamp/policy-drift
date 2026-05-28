@@ -18,7 +18,6 @@
     autocomplete="off"
     spellcheck="false"
   >
-  <p class="search-hint" id="dashboard-search-hint">Type to filter in real time.</p>
 </div>
 
 {% for cluster in clusters %}
@@ -41,7 +40,7 @@
       </p>
       <p class="instrument-meta">
         {{ row.version_count }} version{{ 's' if row.version_count != 1 else '' }}
-        · last fetch {% if row.last_fetch_at %}{{ row.last_fetch_at.strftime('%Y-%m-%d %H:%M') }}{% else %}never{% endif %}
+        · last fetch {% if row.last_fetch_at %}{{ fmt_dt(row.last_fetch_at) }}{% else %}never{% endif %}
         <span class="tag-pill tag-pill--status tag-pill--{{ row.status_class }}">{{ row.status_label }}</span>
         {% if row.last_fetch_message %}<span class="fetch-note">{{ row.last_fetch_message }}</span>{% endif %}
       </p>

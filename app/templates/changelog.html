@@ -8,7 +8,7 @@
 <div class="changelog">
   {% for item in items %}
   <article class="change-row">
-    <p class="change-date">{{ item.retrieved_at.strftime('%Y-%m-%d') }}</p>
+    <p class="change-date">{{ fmt_date(item.retrieved_at) }}</p>
     <div class="change-body">
       <p class="change-title">
         <a href="/instruments/{{ item.instrument.slug }}">{{ item.instrument.title }}</a>

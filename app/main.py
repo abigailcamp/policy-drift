@@ -36,6 +36,11 @@ templates.env.globals.update(site_context())
 
 security = HTTPBasic()
 
+def _fmt_dt(dt) -> str | None:
+    if not dt:
+        return None
+    return dt.strftime("%B %d, %Y %H:%M").replace(" 0", " ")
+
 
 def require_admin(credentials: HTTPBasicCredentials = Depends(security)) -> bool:
     if not ADMIN_PASSWORD:
@@ -662,7 +667,7 @@ def api_search(q: str = "", db: Session = Depends(get_db)):
                     "tags": [t.strip() for t in (inst.policy_tags or "").split(",") if t.strip()],
                     "version_count": version_count,
                     "last_fetch_status": inst.last_fetch_status or "manual",
-                    "last_fetch_at": inst.last_fetch_at.strftime("%Y-%m-%d %H:%M") if inst.last_fetch_at else None,
+                    "last_fetch_at": _fmt_dt(inst.last_fetch_at),
                     "snippet": "",
                 }
             )
@@ -710,7 +715,7 @@ def api_search(q: str = "", db: Session = Depends(get_db)):
                 "tags": [t.strip() for t in (inst.policy_tags or "").split(",") if t.strip()],
                 "version_count": version_count,
                 "last_fetch_status": inst.last_fetch_status or "manual",
-                "last_fetch_at": inst.last_fetch_at.strftime("%Y-%m-%d %H:%M") if inst.last_fetch_at else None,
+                "last_fetch_at": _fmt_dt(inst.last_fetch_at),
                 "snippet": snippet,
             }
         )

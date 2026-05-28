@@ -8,7 +8,7 @@
 <div class="analysis-index">
   {% for post in posts %}
   <article class="analysis-row">
-    <p class="analysis-date">{{ post.published.strftime('%Y-%m-%d') }}</p>
+    <p class="analysis-date">{{ fmt_date(post.published) }}</p>
     <div class="analysis-body">
       <p class="analysis-title"><a href="/analysis/{{ post.slug }}">{{ post.title }}</a></p>
       {% if post.author %}<p class="analysis-byline">By {{ post.author }}</p>{% endif %}

@@ -1,6 +1,29 @@
 """Shared variables for every Jinja template."""
 
+from __future__ import annotations
+
+from datetime import date, datetime
+
 from app import site_profile
+
+
+def _fmt_month_day_year(d: date) -> str:
+    # "May 27, 2026" (no leading zero on day)
+    return d.strftime("%B %d, %Y").replace(" 0", " ")
+
+
+def fmt_date(d: date | datetime | None) -> str:
+    if not d:
+        return ""
+    if isinstance(d, datetime):
+        d = d.date()
+    return _fmt_month_day_year(d)
+
+
+def fmt_dt(dt: datetime | None) -> str:
+    if not dt:
+        return ""
+    return dt.strftime("%B %d, %Y %H:%M").replace(" 0", " ")
 
 
 def site_context() -> dict:
@@ -21,4 +44,6 @@ def site_context() -> dict:
         "footer_email": getattr(site_profile, "FOOTER_EMAIL", ""),
         "footer_description": getattr(site_profile, "FOOTER_DESCRIPTION", ""),
         "footer_shadow_fleet_url": getattr(site_profile, "FOOTER_SHADOW_FLEET_URL", ""),
+        "fmt_date": fmt_date,
+        "fmt_dt": fmt_dt,
     }
