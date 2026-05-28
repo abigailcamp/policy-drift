@@ -29,6 +29,7 @@ from app.db import (
 from app.diff.redline import export_pair_markdown
 from app.ingest.federal_register import fetch_all_executive_orders
 from app.ingest.govinfo import fetch_all_public_laws
+from app.ingest.fr_series import fetch_all_fr_series
 from app.ingest.ofac_sdn import fetch_ofac_sdn
 from app.ingest.manual import create_manual_version
 from app.services import get_instrument_by_slug, get_or_create_pair, parse_stats
@@ -178,12 +179,13 @@ def on_startup() -> None:
             src = UPLOAD_SOURCES.get(slug, {})
             title = (src.get("title") or slug).strip()
             inst_type = (src.get("type") or "executive_order").strip()
+            policy_tags = (src.get("policy_tags") or "").strip()
             db.add(
                 Instrument(
                     slug=slug,
                     title=title,
                     instrument_type=inst_type,
-                    policy_tags="",
+                    policy_tags=policy_tags,
                     source_ref=title,
                     last_fetch_status="manual",
                 )
@@ -278,7 +280,15 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
             "title": "Russia–Ukraine",
             "deck": "Authorities • directives • licensing",
             "rows": _cluster_rows(
-                ["eo-14024", "eo-14066", "eo-14068", "ukraine-supplemental-118-50", "repo-act-118-68"]
+                [
+                    "eo-14024",
+                    "directive-4-eo14024",
+                    "russia-gl-13",
+                    "eo-14066",
+                    "eo-14068",
+                    "ukraine-supplemental-118-50",
+                    "repo-act-118-68",
+                ]
             ),
         },
         {
@@ -544,6 +554,7 @@ def admin_fetch(request: Request, db: Session = Depends(get_db), _: bool = Depen
 
     fetch_all_executive_orders(db)
     fetch_all_public_laws(db)
+    fetch_all_fr_series(db)
     fetch_ofac_sdn(db)
 
     # Detect new versions by VersionSource timestamps since the fetch started.

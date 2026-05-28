@@ -43,4 +43,18 @@ UPLOAD_SOURCES: dict[str, dict[str, str]] = {
         "default_date": "",
         "type": "ofac_sdn",
     },
+    "russia-gl-13": {
+        "title": "Russia GL 13 (Directive 4 admin)",
+        "fr_url": "https://www.federalregister.gov/documents/2023/03/21/2023-05648/publication-of-russian-harmful-foreign-activities-sanctions-regulations-web-general-licenses-8f-13d",
+        "default_label": "2023-03-21 — GL 13D (Federal Register)",
+        "default_date": "2023-02-24",
+        "type": "fr_series",
+    },
+    "directive-4-eo14024": {
+        "title": "Directive 4 (EO 14024)",
+        "fr_url": "https://www.federalregister.gov/documents/2023/06/05/2023-11980/publication-of-directive-4-as-amended-under-executive-order-14024-of-april-15-2021",
+        "default_label": "2023-06-05 — Directive 4 (as amended)",
+        "default_date": "2023-06-05",
+        "type": "fr_series",
+    },
 }
