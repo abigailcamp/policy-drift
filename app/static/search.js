@@ -1,6 +1,6 @@
 (() => {
   const input = document.getElementById("dashboard-search-input");
-  const list = document.querySelector(".instrument-list");
+  const list = document.getElementById("search-results");
   if (!input || !list) return;
 
   function escapeHtml(s) {
@@ -20,6 +20,10 @@
   }
 
   function renderItems(items, q) {
+    if (!q) {
+      list.innerHTML = "";
+      return;
+    }
     if (!items.length) {
       list.innerHTML = `<li class="instrument-item"><p class="page-lead">No matches.</p></li>`;
       return;

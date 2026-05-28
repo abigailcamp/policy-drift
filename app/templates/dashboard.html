@@ -8,25 +8,13 @@
 
 <p class="dashboard-deck">Monitoring the legal architecture of sanctions, trade, and security policy</p>
 
-<div class="dashboard-search" role="search">
-  <label class="search-label" for="dashboard-search-input">Search</label>
-  <input
-    class="search-input"
-    id="dashboard-search-input"
-    type="search"
-    placeholder="Search titles, tags, and document text…"
-    autocomplete="off"
-    spellcheck="false"
-  >
-</div>
-
 {% for cluster in clusters %}
 <section class="dashboard-cluster" id="cluster-{{ cluster.key }}">
   <p class="section-label section-label--spaced">{{ cluster.title }}</p>
   {% if cluster.deck %}<p class="cluster-deck">{{ cluster.deck }}</p>{% endif %}
 
-  <ul class="instrument-list">
   {% if cluster.rows %}
+  <ul class="instrument-list">
     {% for row in cluster.rows %}
     <li class="instrument-item">
       <h2 class="instrument-title"><a href="/instruments/{{ row.instrument.slug }}">{{ row.instrument.title }}</a></h2>
@@ -53,19 +41,25 @@
       </p>
     </li>
     {% endfor %}
-  {% else %}
-    {% for ph in cluster.placeholders %}
-    <li class="instrument-item instrument-item--placeholder">
-      <h2 class="instrument-title">{{ ph.title }}</h2>
-      <p class="instrument-meta">
-        <span class="tag-pill tag-pill--status tag-pill--pending">Coming soon</span>
-      </p>
-    </li>
-    {% endfor %}
-  {% endif %}
   </ul>
+  {% else %}
+  <p class="cluster-soon">Instruments coming soon.</p>
+  {% endif %}
 </section>
 {% endfor %}
+
+<div class="dashboard-search dashboard-search--bottom" role="search" aria-label="Search instruments">
+  <label class="search-label" for="dashboard-search-input">Search</label>
+  <input
+    class="search-input"
+    id="dashboard-search-input"
+    type="search"
+    placeholder="Search titles, tags, and document text…"
+    autocomplete="off"
+    spellcheck="false"
+  >
+</div>
+<ul class="instrument-list instrument-list--search" id="search-results" aria-live="polite"></ul>
 {% endblock %}
 
 {% block extra_scripts %}
