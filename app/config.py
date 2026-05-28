@@ -24,5 +24,6 @@ TRACKED_SLUGS: frozenset[str] = frozenset(
         "eo-14068",
         "ukraine-supplemental-118-50",
         "repo-act-118-68",
+        "ofac-sdn",
     }
 )

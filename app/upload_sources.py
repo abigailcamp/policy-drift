@@ -36,4 +36,11 @@ UPLOAD_SOURCES: dict[str, dict[str, str]] = {
         "default_date": "2024-04-24",
         "type": "public_law",
     },
+    "ofac-sdn": {
+        "title": "OFAC SDN List",
+        "fr_url": "https://sanctionslist.ofac.treas.gov/",
+        "default_label": "Latest snapshot (OFAC Sanctions List Service)",
+        "default_date": "",
+        "type": "ofac_sdn",
+    },
 }

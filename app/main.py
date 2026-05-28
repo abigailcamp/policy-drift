@@ -29,6 +29,7 @@ from app.db import (
 from app.diff.redline import export_pair_markdown
 from app.ingest.federal_register import fetch_all_executive_orders
 from app.ingest.govinfo import fetch_all_public_laws
+from app.ingest.ofac_sdn import fetch_ofac_sdn
 from app.ingest.manual import create_manual_version
 from app.services import get_instrument_by_slug, get_or_create_pair, parse_stats
 from app.upload_sources import UPLOAD_SOURCES
@@ -261,12 +262,24 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
             }
         )
 
+    rows_by_slug = {r["instrument"].slug: r for r in rows}
+
+    def _cluster_rows(slugs: list[str]) -> list[dict]:
+        out: list[dict] = []
+        for s in slugs:
+            r = rows_by_slug.get(s)
+            if r:
+                out.append(r)
+        return out
+
     clusters = [
         {
             "key": "russia_ukraine",
             "title": "Russia–Ukraine",
             "deck": "Authorities • directives • licensing",
-            "rows": rows,
+            "rows": _cluster_rows(
+                ["eo-14024", "eo-14066", "eo-14068", "ukraine-supplemental-118-50", "repo-act-118-68"]
+            ),
         },
         {
             "key": "china",
@@ -291,10 +304,8 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
             "key": "general",
             "title": "General",
             "deck": "NDAA • OFAC lists • cross-cutting",
-            "placeholders": [
-                {"title": "NDAA — key provisions tracked year over year"},
-                {"title": "OFAC SDN List — additions and removals"},
-            ],
+            "rows": _cluster_rows(["ofac-sdn"]),
+            "placeholders": [{"title": "NDAA — key provisions tracked year over year"}],
         },
     ]
     return render(
@@ -533,6 +544,7 @@ def admin_fetch(request: Request, db: Session = Depends(get_db), _: bool = Depen
 
     fetch_all_executive_orders(db)
     fetch_all_public_laws(db)
+    fetch_ofac_sdn(db)
 
     # Detect new versions by VersionSource timestamps since the fetch started.
     from sqlalchemy import func
