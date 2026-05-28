@@ -8,10 +8,24 @@
 
 <p class="dashboard-deck">Monitoring the legal architecture of sanctions, trade, and security policy</p>
 
+<div class="dashboard-search dashboard-search--primary" role="search" aria-label="Search instruments">
+  <label class="search-label" for="dashboard-search-input">Search</label>
+  <input
+    class="search-input search-input--primary"
+    id="dashboard-search-input"
+    type="search"
+    placeholder="Search executive orders, directives, public laws, and agency guidance…"
+    autocomplete="off"
+    spellcheck="false"
+  >
+</div>
+<ul class="instrument-list instrument-list--search instrument-list--archive" id="search-results" aria-live="polite"></ul>
+
+<div class="dashboard-grid" aria-label="Instrument clusters">
 {% for cluster in clusters %}
 <section class="dashboard-cluster" id="cluster-{{ cluster.key }}">
-  <p class="section-label section-label--spaced">{{ cluster.title }}</p>
-  {% if cluster.deck %}<p class="cluster-deck">{{ cluster.deck }}</p>{% endif %}
+  <p class="cluster-anchor">{{ cluster.title }}</p>
+  {% if cluster.deck %}<p class="cluster-deck cluster-deck--index">{{ cluster.deck }}</p>{% endif %}
 
   {% if cluster.rows %}
   <ul class="instrument-list instrument-list--archive">
@@ -35,19 +49,8 @@
   {% endif %}
 </section>
 {% endfor %}
-
-<div class="dashboard-search dashboard-search--bottom" role="search" aria-label="Search instruments">
-  <label class="search-label" for="dashboard-search-input">Search</label>
-  <input
-    class="search-input"
-    id="dashboard-search-input"
-    type="search"
-    placeholder="Search titles, tags, and document text…"
-    autocomplete="off"
-    spellcheck="false"
-  >
 </div>
-<ul class="instrument-list instrument-list--search" id="search-results" aria-live="polite"></ul>
+
 {% endblock %}
 
 {% block extra_scripts %}

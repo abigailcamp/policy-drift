@@ -233,13 +233,13 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
         {
             "key": "russia_ukraine",
             "title": "Russia–Ukraine",
-            "deck": "Sanctions authorities, trade restrictions, and related legal instruments.",
+            "deck": "Authorities • directives • licensing",
             "rows": rows,
         },
         {
             "key": "china",
             "title": "China",
-            "deck": "Export controls, investment restrictions, and entity listing activity.",
+            "deck": "Export controls • listings • restrictions",
             "placeholders": [
                 {"title": "Export controls & licensing"},
                 {"title": "Entity List additions/removals"},
@@ -249,7 +249,7 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
         {
             "key": "iran",
             "title": "Iran",
-            "deck": "Sanctions authorities and designations across programs.",
+            "deck": "Authorities • designations • shipping",
             "placeholders": [
                 {"title": "Iran-related executive instruments"},
                 {"title": "Program designations & changes"},
@@ -258,7 +258,7 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
         {
             "key": "general",
             "title": "General",
-            "deck": "Cross-cutting instruments (NDAA provisions, OFAC list changes, and other global authorities).",
+            "deck": "NDAA • OFAC lists • cross-cutting",
             "placeholders": [
                 {"title": "NDAA — key provisions tracked year over year"},
                 {"title": "OFAC SDN List — additions and removals"},
