@@ -18,6 +18,12 @@
     autocomplete="off"
     spellcheck="false"
   >
+  <div class="search-suggestions" aria-label="Example searches">
+    <button class="search-chip" type="button" data-q="EO 14024">EO 14024</button>
+    <button class="search-chip" type="button" data-q="Directive 4">Directive 4</button>
+    <button class="search-chip" type="button" data-q="public law">Public law</button>
+    <button class="search-chip" type="button" data-q="OFAC SDN">OFAC SDN</button>
+  </div>
 </div>
 <ul class="instrument-list instrument-list--search instrument-list--archive" id="search-results" aria-live="polite"></ul>
 
@@ -37,8 +43,10 @@
         {% endif %}
         <h2 class="archive-title">{{ row.instrument.title }}</h2>
         <p class="archive-meta">
-          {{ row.version_count }} version{{ 's' if row.version_count != 1 else '' }}
-          {% if row.last_fetch_at %}<span class="archive-sep">·</span> last fetch {{ fmt_dt(row.last_fetch_at) }}{% endif %}
+          {{ row.instrument.instrument_type | replace('_', ' ') | title }}
+          <span class="archive-sep">·</span>
+          {{ (row.version_count - 1) if row.version_count > 0 else 0 }} revision{{ '' if (row.version_count - 1) == 1 else 's' }}
+          {% if row.last_fetch_at %}<span class="archive-sep">·</span> Last updated {{ row.last_fetch_at.strftime('%B %Y') }}{% endif %}
         </p>
       </a>
     </li>

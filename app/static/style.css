@@ -521,14 +521,14 @@ a:hover {
 }
 
 .dashboard-search--primary {
-  max-width: 52rem;
-  margin: 1.35rem 0 1.25rem;
+  max-width: 64rem;
+  margin: 1.5rem 0 1.4rem;
 }
 
 .search-input--primary {
   border-bottom-width: 2px;
-  padding: 0.75rem 0;
-  font-size: 1.06rem;
+  padding: 0.95rem 0;
+  font-size: 1.12rem;
 }
 
 .search-input--primary::placeholder {
@@ -597,6 +597,36 @@ a:hover {
   font-size: 0.92rem;
   color: var(--muted);
   margin: 0.35rem 0 1.25rem;
+}
+
+.search-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.6rem;
+  margin-top: 0.65rem;
+}
+
+.search-chip {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid rgba(211, 209, 199, 0.8);
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.search-chip:hover {
+  color: var(--slate);
+  border-color: rgba(139, 58, 30, 0.45);
+}
+
+.search-chip:focus-visible {
+  outline: none;
+  box-shadow: inset 0 -1px 0 var(--rust);
 }
 
 .dashboard-search--bottom {
@@ -677,6 +707,18 @@ mark {
 
 .instrument-list--archive {
   margin-top: 0.25rem;
+}
+
+.dashboard-grid .instrument-list--archive {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem 1.25rem;
+}
+
+@media (max-width: 1100px) {
+  .dashboard-grid .instrument-list--archive {
+    grid-template-columns: 1fr;
+  }
 }
 
 .archive-item {

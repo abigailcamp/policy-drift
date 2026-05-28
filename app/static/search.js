@@ -2,6 +2,7 @@
   const input = document.getElementById("dashboard-search-input");
   const list = document.getElementById("search-results");
   if (!input || !list) return;
+  const chips = Array.from(document.querySelectorAll(".search-chip"));
 
   function escapeHtml(s) {
     return String(s)
@@ -66,6 +67,16 @@
     lastQ = q;
     if (t) clearTimeout(t);
     t = setTimeout(() => runSearch(q), 180);
+  });
+
+  chips.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const q = (btn.getAttribute("data-q") || "").trim();
+      if (!q) return;
+      input.value = q;
+      input.focus();
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
   });
 })();
 
