@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from datetime import date
 from pathlib import Path
+from typing import Optional
 
 import secrets
 
@@ -47,6 +48,7 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 templates.env.globals.update(site_context())
 
 security = HTTPBasic()
+security_optional = HTTPBasic(auto_error=False)
 
 def _fmt_dt(dt) -> str | None:
     if not dt:
@@ -54,12 +56,20 @@ def _fmt_dt(dt) -> str | None:
     return dt.strftime("%B %d, %Y %H:%M").replace(" 0", " ")
 
 
+def is_admin_user(
+    credentials: Optional[HTTPBasicCredentials] = Depends(security_optional),
+) -> bool:
+    if not ADMIN_PASSWORD or credentials is None:
+        return False
+    ok_user = secrets.compare_digest(credentials.username or "", "admin")
+    ok_pass = secrets.compare_digest(credentials.password or "", ADMIN_PASSWORD)
+    return ok_user and ok_pass
+
+
 def require_admin(credentials: HTTPBasicCredentials = Depends(security)) -> bool:
     if not ADMIN_PASSWORD:
         raise HTTPException(status_code=503, detail="ADMIN_PASSWORD not set")
-    ok_user = secrets.compare_digest(credentials.username or "", "admin")
-    ok_pass = secrets.compare_digest(credentials.password or "", ADMIN_PASSWORD)
-    if not (ok_user and ok_pass):
+    if not is_admin_user(credentials):
         raise HTTPException(
             status_code=401,
             detail="Unauthorized",
@@ -357,6 +367,7 @@ def diff_view(
     section_aware: bool = Query(False),
     mode: str = Query("unified"),
     db: Session = Depends(get_db),
+    is_admin: bool = Depends(is_admin_user),
 ):
     if from_id == to_id:
         raise HTTPException(status_code=400, detail="Select two different versions")
@@ -384,13 +395,19 @@ def diff_view(
             "note": note,
             "section_aware": section_aware,
             "mode": mode,
+            "is_admin": is_admin,
             "active_nav": "dashboard",
         },
     )
 
 
 @app.get("/notes/{pair_id}/edit", response_class=HTMLResponse)
-def note_edit(request: Request, pair_id: int, db: Session = Depends(get_db)):
+def note_edit(
+    request: Request,
+    pair_id: int,
+    db: Session = Depends(get_db),
+    _: bool = Depends(require_admin),
+):
     pair = db.query(VersionPair).filter(VersionPair.id == pair_id).first()
     if not pair:
         raise HTTPException(status_code=404, detail="Version pair not found")
@@ -416,6 +433,7 @@ def note_save(
     tags: str = Form(""),
     caveats: str = Form(""),
     db: Session = Depends(get_db),
+    _: bool = Depends(require_admin),
 ):
     pair = db.query(VersionPair).filter(VersionPair.id == pair_id).first()
     if not pair:

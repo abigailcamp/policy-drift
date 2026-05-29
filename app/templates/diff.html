@@ -24,7 +24,9 @@
     <a class="{% if mode == 'side_by_side' %}is-active{% endif %}" href="/diff?from={{ from_version.id }}&to={{ to_version.id }}&mode=side_by_side{% if section_aware %}&section_aware=true{% endif %}">Side-by-side</a>
     <a class="{% if section_aware %}is-active{% endif %}" href="/diff?from={{ from_version.id }}&to={{ to_version.id }}&section_aware=true&mode={{ mode }}">Section-aware</a>
     <a href="/export/markdown?from={{ from_version.id }}&to={{ to_version.id }}">Export Markdown</a>
+    {% if is_admin %}
     <a href="/notes/{{ pair.id }}/edit" class="btn-solid">{% if note and note.summary %}Edit note{% else %}Add analyst note{% endif %}</a>
+    {% endif %}
   </nav>
 </header>
 
