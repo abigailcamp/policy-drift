@@ -4,14 +4,16 @@ We treat each fetched SDN list export as a "version" of a single instrument.
 When OFAC publishes additions/removals, the file content changes and the next
 fetch creates a new version, enabling real diffs.
 
-OFAC's Sanctions List Service only serves the *current* full SDN.CSV; publication
-IDs do not return historical full files. For an immediate second snapshot, use
-``ingest_ofac_sdn_archive`` (Internet Archive copies of treasury.gov downloads).
+OFAC's Sanctions List Service only serves the *current* full SDN.CSV. For a prior
+full-list snapshot (redline demo), use ``ingest_ofac_sdn_archive`` — a bundled
+seed file shipped with the app (Wayback is blocked from Railway/datacenter IPs).
 """
 
 from __future__ import annotations
 
+import gzip
 from datetime import date, datetime
+from pathlib import Path
 
 import httpx
 from sqlalchemy.orm import Session
@@ -19,6 +21,7 @@ from sqlalchemy.orm import Session
 from app.db import Instrument
 from app.ingest.manual import create_manual_version
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SLS_BASE = "https://sanctionslistservice.ofac.treas.gov"
 
 SDN_EXPORT_URLS: list[str] = [
@@ -32,12 +35,10 @@ SDN_EXPORT_URLS: list[str] = [
 # Prior full-list snapshots (not available from SLS). Ordered oldest → newest.
 OFAC_SDN_ARCHIVE_SNAPSHOTS: list[dict[str, str]] = [
     {
-        "source_url": (
-            "https://web.archive.org/web/20260520120000/"
-            "https://www.treasury.gov/ofac/downloads/sdn.csv"
-        ),
-        "version_label": "OFAC SDN snapshot — 2026-05-20 (Internet Archive)",
+        "seed_path": "data/seeds/ofac-sdn-2026-05-20.csv.gz",
+        "version_label": "OFAC SDN snapshot — 2026-05-20 (archived)",
         "effective_date": "2026-05-20",
+        "source_url": "https://www.treasury.gov/ofac/downloads/sdn.csv",
     },
 ]
 
@@ -64,6 +65,31 @@ def _fetch_bytes(url: str, *, timeout: float = 120.0) -> bytes:
 
 def _fetch_text(url: str) -> str:
     return _fetch_bytes(url).decode("utf-8", errors="replace")
+
+
+def _load_archive_snapshot(snap: dict[str, str]) -> tuple[str, str]:
+    """Return (raw_text, source_url). Prefer bundled seed over remote archives."""
+    seed_rel = snap.get("seed_path", "").strip()
+    if seed_rel:
+        seed = Path(seed_rel)
+        if not seed.is_absolute():
+            seed = PROJECT_ROOT / seed
+        if not seed.is_file():
+            raise ValueError(f"Archive seed not found: {seed}")
+        if seed.suffix == ".gz":
+            with gzip.open(seed, "rt", encoding="utf-8", errors="replace") as handle:
+                raw = handle.read()
+        else:
+            raw = seed.read_text(encoding="utf-8", errors="replace")
+        if len(raw.strip()) < 1000:
+            raise ValueError(f"Archive seed too small: {seed}")
+        source_url = snap.get("source_url") or f"seed://{seed.name}"
+        return raw, source_url
+
+    remote = snap.get("source_url", "").strip()
+    if not remote:
+        raise ValueError("Archive snapshot has no seed_path or source_url")
+    return _fetch_text(remote), remote
 
 
 def fetch_sdn_snapshot() -> tuple[str, str]:
@@ -120,7 +146,7 @@ def ingest_ofac_sdn_archive(db: Session, instrument: Instrument) -> tuple[int, i
 
     for snap in OFAC_SDN_ARCHIVE_SNAPSHOTS:
         try:
-            raw = _fetch_text(snap["source_url"])
+            raw, source_url = _load_archive_snapshot(snap)
             eff = None
             if snap.get("effective_date"):
                 eff = date.fromisoformat(snap["effective_date"])
@@ -130,7 +156,7 @@ def ingest_ofac_sdn_archive(db: Session, instrument: Instrument) -> tuple[int, i
                 raw_text=raw,
                 version_label=snap["version_label"],
                 effective_date=eff,
-                source_url=snap["source_url"],
+                source_url=source_url,
                 source_type="ofac_sdn_archive",
             )
             if not result.version:

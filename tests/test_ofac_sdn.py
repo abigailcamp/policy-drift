@@ -23,7 +23,7 @@ def test_ofac_archive_ingest_creates_distinct_version():
         archive_body = f"36,\"TEST ENTITY {unique}\",-0- ,\"CUBA\",-0- ,-0- ,-0- ,-0- ,-0- ,-0- ,-0- ,-0- \n"
         current_body = f"36,\"OTHER ENTITY {unique}\",-0- ,\"IRAN\",-0- ,-0- ,-0- ,-0- ,-0- ,-0- ,-0- ,-0- \n"
 
-        with patch("app.ingest.ofac_sdn._fetch_text", return_value=archive_body):
+        with patch("app.ingest.ofac_sdn._load_archive_snapshot", return_value=(archive_body, "seed://test.csv")):
             new_count, deduped, err = ingest_ofac_sdn_archive(db, inst)
         assert err is None
         assert new_count == 1

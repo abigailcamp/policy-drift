@@ -34,7 +34,7 @@
   <li class="instrument-item">
     <h2 class="instrument-title"><a href="/instruments/{{ ofac_status.slug }}">{{ ofac_status.title }}</a></h2>
     <p class="instrument-meta">{{ ofac_status.version_count }} version{{ 's' if ofac_status.version_count != 1 else '' }}{% if ofac_status.last_fetch_message %} · {{ ofac_status.last_fetch_message }}{% endif %}</p>
-    <p class="instrument-meta">Live fetch stores the current list. Use archive backfill once for a prior snapshot, then compare versions on the instrument page.</p>
+    <p class="instrument-meta">Live fetch stores the current list. Backfill adds a bundled May 2026 snapshot for comparison (works on Railway — no external archive fetch).</p>
   </li>
 </ul>
 <p class="item-actions">
