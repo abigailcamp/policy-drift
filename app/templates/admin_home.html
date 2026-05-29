@@ -38,8 +38,11 @@
   </li>
 </ul>
 <p class="item-actions">
-  <form action="/admin/fetch-ofac-archive" method="post">
+  <form action="/admin/fetch-ofac-archive" method="post" style="display:inline">
     <button type="submit" class="nav-cap nav-cap--button">Backfill prior OFAC SDN snapshot (archive)</button>
+  </form>
+  <form action="/admin/fetch-ofac-current" method="post" style="display:inline;margin-left:0.5rem">
+    <button type="submit" class="nav-cap nav-cap--button">Fetch current OFAC SDN</button>
   </form>
 </p>
 {% endif %}

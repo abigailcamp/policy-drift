@@ -47,6 +47,14 @@
   </form>
   {% else %}
   <p class="page-lead">Add at least two versions to compare.</p>
+  <p class="form-hint">
+    Versions are added in <a href="/admin">Admin</a> (login required — not on this public page).
+    {% if instrument.slug == 'ofac-sdn' %}
+    You have the archived snapshot; in Admin click <strong>Fetch current OFAC SDN</strong> to pull today’s live list, then return here to compare.
+    {% else %}
+    In Admin, use <strong>Run fetch</strong> or <strong>Upload</strong>.
+    {% endif %}
+  </p>
   {% endif %}
 </section>
 
@@ -58,7 +66,7 @@
       <strong>{{ v.version_label }}</strong>
       {% if v.effective_date %}<span style="color:var(--muted)"> — {{ v.effective_date }}</span>{% endif %}
       {% if v.sources %}
-      <br><small><a href="{{ v.sources[0].source_url }}" target="_blank" rel="noopener">{{ v.sources[0].source_type }}</a></small>
+      <br><small><a href="{{ v.sources[0].source_url }}" target="_blank" rel="noopener">{% if v.sources[0].source_type == 'ofac_sdn_archive' %}Archived snapshot{% elif v.sources[0].source_type == 'ofac_sdn' %}Live OFAC export{% else %}{{ v.sources[0].source_type }}{% endif %}</a></small>
       {% endif %}
     </li>
     {% else %}

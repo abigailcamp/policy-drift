@@ -859,8 +859,19 @@ def admin_fetch_fr_series(
 def admin_fetch_ofac_archive(
     request: Request, db: Session = Depends(get_db), _: bool = Depends(require_admin)
 ):
-    """Pull a prior full SDN.CSV from Internet Archive (OFAC SLS only serves the current file)."""
+    """Pull a prior full SDN.CSV from bundled seed (OFAC SLS only serves the current file)."""
     from urllib.parse import quote
 
     msg = fetch_ofac_sdn_archive(db)
-    return RedirectResponse(url=f"/admin?fetch_log={quote(f'ofac-sdn: {msg}')}", status_code=303)
+    return RedirectResponse(url=f"/admin?fetch_log={quote(f'ofac-sdn archive: {msg}')}", status_code=303)
+
+
+@app.post("/admin/fetch-ofac-current")
+def admin_fetch_ofac_current(
+    request: Request, db: Session = Depends(get_db), _: bool = Depends(require_admin)
+):
+    """Pull today's live SDN.CSV from OFAC only (no full instrument fetch)."""
+    from urllib.parse import quote
+
+    msg = fetch_ofac_sdn(db)
+    return RedirectResponse(url=f"/admin?fetch_log={quote(f'ofac-sdn live: {msg}')}", status_code=303)
